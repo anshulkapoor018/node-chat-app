@@ -14,14 +14,24 @@ var io = socketIO(server); // used to communicate between server and client
 //middleware to join the public folder
 app.use(express.static(publicPath));
 
-
 //event listening on io
 io.on('connection', (socket) => {
   console.log('New User was Connected');
-  
+
+  socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to chat App',
+    createdAt: new Date().getTime()
+  });
+
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user joined',
+    createdAt: new Date().getTime()
+  });
+
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
-
     //socket.emit emits the message to single connection, but io.emit emits the message to every connection
     io.emit('newMessage', {
       from: message.from,
