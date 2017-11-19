@@ -1,14 +1,29 @@
+//Required Libraries
 const path = require('path');
+const http = require('http');
+const socketIO = require('socket.io');
 const express = require('express');
-const port = process.env.PORT || 3000;
 
+const port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname, '../public');
 
 var app = express();
+var server = http.createServer(app);
+var io = socketIO(server); // used to communicate between server and client
 
-//middleware to join the public folder 
+//middleware to join the public folder
 app.use(express.static(publicPath));
 
-app.listen(port, () => {
+
+//event listening on io
+io.on('connection', (socket) => {
+  console.log('New User was Connected');
+
+  socket.on('disconnect', () => {
+    console.log('User was Disconnected');
+  });
+});
+
+server.listen(port, () => {
   console.log(`Server is up on port ${port}`);
 });
